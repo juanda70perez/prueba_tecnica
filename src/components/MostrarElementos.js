@@ -108,8 +108,8 @@ const MostrarElementos = () => {
                 </div> 
             </div>
         </div>
-        <div className='Modal fade'>
-
+        <div id='modalElementos' className='Modal fade' aria-hidden='true'>
+            
         </div>
     </div>
   )
