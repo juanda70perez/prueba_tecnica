@@ -16,10 +16,24 @@ const MostrarElementos = () => {
     const [pesoMaximo, setPesoMaximo] = useState('');
     const [caloriasMinima, setCaloriasMinima] = useState('');
     const [mochila, setMochila] = useState([]);
+
     useEffect(() => {
         getElementos();
     }, []);
-
+    function isEmptyObject(obj){
+        return JSON.stringify(obj) === '{}'
+    }
+    const datos = () => {
+        var indents = [];
+        if(!isEmptyObject(mochila)){
+            for (var i = 0; i < this.mochila.elements.level; i++) {
+            indents.push(<span className='indent' key={i}></span>);
+            }
+        }else{
+            indents=<span>Vacio</span>
+        }
+        return indents;
+    }
     const getElementos = async () => {
         await axios.get(url).then((response) => {
             setElementos(response.data);
@@ -109,10 +123,10 @@ const MostrarElementos = () => {
             setMochila(response.data);
             console.log(response.data);
         }).catch(function (error) {
-                show_alerta('Error en la solicitud', 'error');
-                console.log('fallo');
-                console.log(error);
-            });
+            show_alerta('Error en la solicitud', 'error');
+            console.log('fallo');
+            console.log(error);
+        });
     }
     const envarSolicitud = async (metodo, parametros) => {
         console.log(JSON.stringify(parametros));
@@ -271,8 +285,9 @@ const MostrarElementos = () => {
                                 </button>
                             </div>
                             <div>
-                                <span>Peso:{mochila.peso} Calorias: {mochila.calorias} con el conjunto óptimo:</span>
-                                 
+                                <span>Peso total: {mochila.peso} Calorias totales: {mochila.calorias} con el conjunto óptimo:</span>
+                                <div>
+                                </div>
                             </div>
                         </div>
                         <div className='modal-footer'>
