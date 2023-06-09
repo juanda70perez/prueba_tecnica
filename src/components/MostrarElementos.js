@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react'
 import axios from 'axios';
-import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
 import { show_alerta } from '../funciones/funciones';
 const MostrarElementos = () => {
@@ -12,11 +12,6 @@ const MostrarElementos = () => {
     const [calorias,setCalorias] = useState('');
     const [operacion,setOperacion] = useState(1);
     const [titulo,setTitulo] = useState('');
-    const ob = {
-        Nombre:"E12",
-        peso:"13",
-        calorias:"14"
-    }
     useEffect(() =>{
         getElementos();
     },[]);
@@ -47,6 +42,27 @@ const MostrarElementos = () => {
         });
         
     }
+    const openModal = (op,id, nombre, peso, calorias) =>{
+        setId('');
+        setNombre('');
+        setPeso('');
+        setCalorias('');
+        setOperacion(op);
+        if(op === 1){
+            setTitulo('Registrar Producto');
+        }
+        else if(op === 2){
+            setTitulo('Editar Producto');
+            setId(id);
+            setNombre(nombre);
+            setPeso(peso);
+            setCalorias(calorias);
+        }
+        window.setTimeout(function(){
+            document.getElementById('nombre').focus();
+        },500);
+    }
+
     /*
     const getElementos = () => {
         fetch(url,{
@@ -68,8 +84,8 @@ const MostrarElementos = () => {
         <div className='container-fluid'>
             <div className='row mt-3'>
                 <div className='col-md-4 offset-4'>
-                    <div className='d-grid mx-autp'>
-                        <button className='btn btn-dark' data-bs-toogle='modal' data-bs-target="#modalElementos">
+                    <div className='d-grid mx-auto'>
+                        <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalElementos'>
                             <i className='fa-solid fa-circle-plus'></i> Añadir
                         </button>
                     </div>
@@ -85,18 +101,20 @@ const MostrarElementos = () => {
                             </tr>
                         </thead>
                         <tbody className='table-group-divider'>
-                            {elementos.map((elemento,id) =>(
+                            {elementos.map((elemento,i) =>(
                                 <tr key={elemento.id}>
-                                <td>{elemento.id}</td>
+                                <td>{i+1}</td>
                                 <td>{elemento.nombre}</td>
                                 <td>{elemento.peso}</td>
                                 <td>{elemento.calorias}</td>
                                 <td>
-                                    <button className='btn btn-warning'>
+                                    <button onClick={() => openModal(2,elemento.id,elemento.nombre,elemento.peso,elemento.calorias)}
+                                     className='btn btn-warning' data-bs-toggle='modal' data-bs-target='modalElementos'>
                                         <i className='fa-solid fa-edit'></i>
                                     </button>
                                     &nbsp;
-                                    <button className='btn btn-dabger'>
+                                    <button 
+                                    className='btn btn-danger'>
                                         <i className='fa-solid fa-trash'></i>
                                     </button>
                                 </td>
@@ -108,8 +126,48 @@ const MostrarElementos = () => {
                 </div> 
             </div>
         </div>
-        <div id='modalElementos' className='Modal fade' aria-hidden='true'>
-            
+        <div id='modalElementos' className='modal fade' aria-hidden='true'>
+            <div className='modal-dialog'>
+                 <div className='modal-content'>
+                    <div className='modal-header'>
+                        <label className='h5'>{titulo}</label>
+                        <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'>
+                        </button>
+                    </div>
+                    <div className='modal-body'>
+                        <input type='hidden' id='id'></input>
+                        <div className='input-group mb-3'>
+                            <span className='input-group-text'>
+                                <i className='fa-solid fa-gift'></i>
+                            </span>
+                            <input type='text' id='nombre' className='form-control' placeholder='Nombre' value={nombre}
+                            onChange={(e)=> setNombre(e.target.value)}></input>
+                        </div>
+                        <div className='input-group mb-3'>
+                            <span className='input-group-text'>
+                            <i className='fa-solid fa-gift'></i>
+                            </span>
+                            <input type='text' id='peso' className='form-control' placeholder='Peso' value={peso}
+                            onChange={(e)=> setPeso(e.target.value)}></input>
+                        </div>
+                        <div className='input-group mb-3'>
+                            <span className='input-group-text'>
+                            <i className='fa-solid fa-gift'></i>
+                            </span>
+                            <input type='text' id='calorias' className='form-control' placeholder='Calorias' value={calorias}
+                            onChange={(e)=> setCalorias(e.target.value)}></input>
+                        </div>
+                        <div className='d-grid col-6 mx-auto'>
+                            <button className='btn btn-success'>
+                                <i className='fa-solid fa-floppy-disk'></i> Guardar
+                            </button>
+                        </div>
+                    </div> 
+                    <div className='modal-footer'>
+                        <button type= 'button' className='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
+                    </div>
+                 </div>
+            </div>
         </div>
     </div>
   )

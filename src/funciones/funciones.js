@@ -1,9 +1,9 @@
-import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
 
-export function show_alerta(mensaje,icono,foco){
+export function show_alerta(mensaje,icono,foco=''){
     onfocus(foco);
-    const MySwal = withReactContent(swal);
+    const MySwal = withReactContent(Swal);
     MySwal.fire({
         title:mensaje,
         icon:icono
