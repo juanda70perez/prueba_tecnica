@@ -62,6 +62,62 @@ const MostrarElementos = () => {
             document.getElementById('nombre').focus();
         },500);
     }
+    const validar = () => {
+        var parametros;
+        var metodo;
+        if(nombre.trim() === ''){
+            show_alerta('Escribe el nombre del elemento','warning');
+        }
+        else if(peso === ''){
+            show_alerta('Escribe el peso del elemento','warning');
+        }
+        else if(calorias === ''){
+            show_alerta('Escribe las calorias del elemento','warning');
+        }
+        else{
+            if(operacion === 1){
+                parametros= {nombre:nombre,peso:parseInt(peso),calorias:parseInt(calorias)};
+                metodo= 'POST';
+            }
+            else{
+                parametros={id:id,Nombre:nombre,peso: parseInt(peso),calorias:parseInt(calorias)};
+                metodo= 'PUT';
+            }
+            envarSolicitud(metodo,parametros);
+        }
+    }
+    const envarSolicitud = async(metodo,parametros) => {
+        console.log(JSON.stringify(parametros));
+        await axios({ method:metodo, url: url, data:JSON.stringify(parametros), headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }}).then(function(){
+                document.getElementById('btnCerrar').click();
+                getElementos();   
+        })
+        .catch(function(error){
+            show_alerta('Error en la solicitud','error');
+            console.log(error);
+        });
+    }
+    const deleteProduct= (id,name) =>{
+        const MySwal = withReactContent(Swal);
+        MySwal.fire({
+            title:'¿Seguro de eliminar el elemento '+name+' ?',
+            icon: 'question',text:'No se podrá dar marcha atrás',
+            showCancelButton:true,confirmButtonText:'Si, eliminar',cancelButtonText:'Cancelar'
+        }).then((result) =>{
+            if(result.isConfirmed){
+                setId(id);
+                var parametros={id: parseInt(id), nombre:'',peso:0,calorias:0};
+                envarSolicitud('DELETE',parametros);
+            }
+            else{
+                show_alerta('El elemento NO fue eliminado','info');
+            }
+        });
+    }
+
 
     /*
     const getElementos = () => {
@@ -109,11 +165,11 @@ const MostrarElementos = () => {
                                 <td>{elemento.calorias}</td>
                                 <td>
                                     <button onClick={() => openModal(2,elemento.id,elemento.nombre,elemento.peso,elemento.calorias)}
-                                     className='btn btn-warning' data-bs-toggle='modal' data-bs-target='modalElementos'>
+                                     className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalElementos'>
                                         <i className='fa-solid fa-edit'></i>
                                     </button>
                                     &nbsp;
-                                    <button 
+                                    <button onClick={() => deleteProduct(elemento.id,elemento.nombre)}
                                     className='btn btn-danger'>
                                         <i className='fa-solid fa-trash'></i>
                                     </button>
@@ -158,13 +214,13 @@ const MostrarElementos = () => {
                             onChange={(e)=> setCalorias(e.target.value)}></input>
                         </div>
                         <div className='d-grid col-6 mx-auto'>
-                            <button className='btn btn-success'>
+                            <button onClick={() => validar()} className='btn btn-success'>
                                 <i className='fa-solid fa-floppy-disk'></i> Guardar
                             </button>
                         </div>
                     </div> 
                     <div className='modal-footer'>
-                        <button type= 'button' className='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
+                        <button id='btnCerrar' type= 'button' className='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
                     </div>
                  </div>
             </div>
