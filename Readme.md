@@ -1,4 +1,4 @@
-# API consumidad desdde React
+# API consumida desdde React
 
 Frondend hecho en React para consumir una api en local host
 ## Installation
