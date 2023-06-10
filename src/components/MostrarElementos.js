@@ -20,20 +20,7 @@ const MostrarElementos = () => {
     useEffect(() => {
         getElementos();
     }, []);
-    function isEmptyObject(obj){
-        return JSON.stringify(obj) === '{}'
-    }
-    const datos = () => {
-        var indents = [];
-        if(!isEmptyObject(mochila)){
-            for (var i = 0; i < this.mochila.elements.level; i++) {
-            indents.push(<span className='indent' key={i}></span>);
-            }
-        }else{
-            indents=<span>Vacio</span>
-        }
-        return indents;
-    }
+
     const getElementos = async () => {
         await axios.get(url).then((response) => {
             setElementos(response.data);
