@@ -13,5 +13,5 @@ Install my-project with npm
     
 ## Authors
 
-- [@octokatherine](https://github.com/juanda70perez)
+- [@juanda70perez](https://github.com/juanda70perez)
 
