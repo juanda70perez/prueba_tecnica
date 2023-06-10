@@ -109,6 +109,7 @@ const MostrarElementos = () => {
         await axios.get(urlOptima + 'PesoMaximo=' + peso + '&' + 'CaloriasMinima=' + calorias).then(function (response) {
             setMochila(response.data);
             console.log(response.data);
+
         }).catch(function (error) {
             show_alerta('Error en la solicitud', 'error');
             console.log('fallo');
@@ -272,9 +273,28 @@ const MostrarElementos = () => {
                                 </button>
                             </div>
                             <div>
-                                <span>Peso total: {mochila.peso} Calorias totales: {mochila.calorias} con el conjunto óptimo:</span>
-                                <div>
-                                </div>
+                                <span>Peso total: {mochila.peso} Calorias totales: {mochila.calorias} con el conjunto óptimo:
+                                    <div className='table-responsive'>
+                                        <table className='table table-bordered'>
+                                            <thead>
+                                                <tr><th>#</th><th>NOMBRE</th><th>PESO</th><th>CALORIAS</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className='table-group-divider'>
+                                                {mochila.elements !== undefined &&
+                                                mochila.elements.map((datos, i) => (
+                                                <tr key={datos.id}>
+                                                    <td>{i + 1}</td>
+                                                    <td>{datos.nombre}</td>
+                                                    <td>{datos.peso}</td>
+                                                    <td>{datos.calorias}</td>
+                                               </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </span>
                             </div>
                         </div>
                         <div className='modal-footer'>
