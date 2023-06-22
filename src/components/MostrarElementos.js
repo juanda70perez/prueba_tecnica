@@ -4,7 +4,6 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
 import { show_alerta } from '../funciones/funciones';
 const MostrarElementos = () => {
-    const url = 'https://localhost:7268/api/elementos';
     const urlOptima = 'https://localhost:7268/api/Optimo?';
     const [elementos,setElementos] = useState([]);
     const [id, setId] = useState('');
@@ -21,33 +20,7 @@ const MostrarElementos = () => {
        
     }, [elementos]);
 
- /*
-    const getElementos = async () => {
-        await axios.get(url).then((response) => {
-            setElementos(response.data);
-        })
-            .catch((error) => {
-                // Error
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    // console.log(error.response.data);
-                    // console.log(error.response.status);
-                    // console.log(error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an instance of XMLHttpRequest in the 
-                    // browser and an instance of
-                    // http.ClientRequest in node.js
-                    console.log(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log('Error', error.message);
-                }
-                console.log(error.config);
-            });
-
-    }*/
+    const isNumber = n => (typeof(n) === 'number' || n instanceof Number);
     const openModal = (op, id, nombre, peso, calorias) => {
         setId('');
         setNombre('');
@@ -70,15 +43,14 @@ const MostrarElementos = () => {
     }
     const validar = () => {
         var parametros;
-        var metodo;
         if (nombre.trim() === '') {
             show_alerta('Escribe el nombre del elemento', 'warning');
         }
-        else if (peso === ''|| parseInt(peso) < 0 ) {
-            console.log(parseInt(peso) );
+        else if (peso === ''|| parseInt(peso) < 0  || isNaN(parseInt(peso)) ) {
+            console.log(isNumber(peso) );
             show_alerta('Escribe el peso del elemento y que no sea negativo', 'warning');
         }
-        else if (calorias === '' || calorias < 1) {
+        else if (calorias === '' || parseInt(calorias) < 1 || isNaN(parseInt(calorias)) ) {
             show_alerta('Escribe las calorias del elemento y que no sea negativo o cero', 'warning');
         }
         else {
@@ -92,19 +64,17 @@ const MostrarElementos = () => {
                 }
                 parametros = { id: id, nombre: nombre, peso: parseInt(peso), calorias: parseInt(calorias) };
                 setElementos(elementos => [...elementos, parametros]);
-            //    metodo = 'POST';
             document.getElementById('btnCerrar').click();
             }
             else {
 
                 parametros = { id: id, nombre: nombre, peso: parseInt(peso), calorias: parseInt(calorias) };
-                let newArr = [...elementos]; // copying the old
+                let newArr = [...elementos];
                 newArr[id-1] = parametros;
                 setElementos(newArr);
                 document.getElementById('btnCerrar').click();
-                //    metodo = 'PUT';
+
             }
-            //envarSolicitud(metodo, parametros);
         }
     }
     const validar2 = () => {
@@ -122,32 +92,20 @@ const MostrarElementos = () => {
     }
     const enviarSolicitud2 = async (peso, calorias) => {
         console.log(urlOptima + 'PesoMaximo=' + peso + '&' + 'CaloriasMinima=' + calorias);
-        await axios.get(urlOptima + 'PesoMaximo=' + peso + '&' + 'CaloriasMinima=' + calorias).then(function (response) {
-            setMochila(response.data);
-            console.log(response.data);
-
-        }).catch(function (error) {
-            show_alerta('Error en la solicitud', 'error');
-            console.log('fallo');
-            console.log(error);
-        });
-    }
-   /* const envarSolicitud = async (metodo, parametros) => {
-        console.log(JSON.stringify(parametros));
         await axios({
-            method: metodo, url: url, data: JSON.stringify(parametros), headers: {
+            method: 'post', url: urlOptima, data: JSON.stringify(elementos), headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        }).then(function () {
-            document.getElementById('btnCerrar').click();
+        }).then(function (response) {
+            setMochila(response.data);
 
         })
             .catch(function (error) {
                 show_alerta('Error en la solicitud', 'error');
-                console.log(error);
-            });
-    }*/
+        });
+    }
+
     const deleteProduct = (id, name) => {
         const MySwal = withReactContent(Swal);
         MySwal.fire({
@@ -183,7 +141,7 @@ const MostrarElementos = () => {
                 </div>
             </div>
             <div className='my-3 container-fluid text-center text-'>
-                <p>Mochila con capacidad máxima: {pesoMaximo} y con calorías minimas de: {caloriasMinima}</p>
+                <p>Mochila con capacidad máxima: {pesoMaximo} y con calorías mínima de: {caloriasMinima}</p>
             </div>
             <div className='row mt-3'>
                 <div className='col-12 col-lg-8 offseet-0 offset-lg-2'>
