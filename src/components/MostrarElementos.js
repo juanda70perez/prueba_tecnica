@@ -6,21 +6,22 @@ import { show_alerta } from '../funciones/funciones';
 const MostrarElementos = () => {
     const url = 'https://localhost:7268/api/elementos';
     const urlOptima = 'https://localhost:7268/api/Optimo?';
-    const [elementos, setElementos] = useState([]);
+    const [elementos,setElementos] = useState([]);
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [peso, setPeso] = useState('');
     const [calorias, setCalorias] = useState('');
     const [operacion, setOperacion] = useState(1);
     const [titulo, setTitulo] = useState('');
-    const [pesoMaximo, setPesoMaximo] = useState('');
-    const [caloriasMinima, setCaloriasMinima] = useState('');
+    const pesoMaximo = 10;
+    const caloriasMinima = 15;
     const [mochila, setMochila] = useState([]);
 
     useEffect(() => {
-        getElementos();
-    }, []);
+       
+    }, [elementos]);
 
+ /*
     const getElementos = async () => {
         await axios.get(url).then((response) => {
             setElementos(response.data);
@@ -46,7 +47,7 @@ const MostrarElementos = () => {
                 console.log(error.config);
             });
 
-    }
+    }*/
     const openModal = (op, id, nombre, peso, calorias) => {
         setId('');
         setNombre('');
@@ -73,22 +74,37 @@ const MostrarElementos = () => {
         if (nombre.trim() === '') {
             show_alerta('Escribe el nombre del elemento', 'warning');
         }
-        else if (peso === '') {
-            show_alerta('Escribe el peso del elemento', 'warning');
+        else if (peso === ''|| parseInt(peso) < 0 ) {
+            console.log(parseInt(peso) );
+            show_alerta('Escribe el peso del elemento y que no sea negativo', 'warning');
         }
-        else if (calorias === '') {
-            show_alerta('Escribe las calorias del elemento', 'warning');
+        else if (calorias === '' || calorias < 1) {
+            show_alerta('Escribe las calorias del elemento y que no sea negativo o cero', 'warning');
         }
         else {
             if (operacion === 1) {
-                parametros = { nombre: nombre, peso: parseInt(peso), calorias: parseInt(calorias) };
-                metodo = 'POST';
+                let id;
+                if(elementos.length !==0 ){
+                     id =elementos[elementos.length-1].id  + 1;
+                }
+                else{
+                    id = elementos.length +1 ;
+                }
+                parametros = { id: id, nombre: nombre, peso: parseInt(peso), calorias: parseInt(calorias) };
+                setElementos(elementos => [...elementos, parametros]);
+            //    metodo = 'POST';
+            document.getElementById('btnCerrar').click();
             }
             else {
-                parametros = { id: id, Nombre: nombre, peso: parseInt(peso), calorias: parseInt(calorias) };
-                metodo = 'PUT';
+
+                parametros = { id: id, nombre: nombre, peso: parseInt(peso), calorias: parseInt(calorias) };
+                let newArr = [...elementos]; // copying the old
+                newArr[id-1] = parametros;
+                setElementos(newArr);
+                document.getElementById('btnCerrar').click();
+                //    metodo = 'PUT';
             }
-            envarSolicitud(metodo, parametros);
+            //envarSolicitud(metodo, parametros);
         }
     }
     const validar2 = () => {
@@ -116,7 +132,7 @@ const MostrarElementos = () => {
             console.log(error);
         });
     }
-    const envarSolicitud = async (metodo, parametros) => {
+   /* const envarSolicitud = async (metodo, parametros) => {
         console.log(JSON.stringify(parametros));
         await axios({
             method: metodo, url: url, data: JSON.stringify(parametros), headers: {
@@ -125,13 +141,13 @@ const MostrarElementos = () => {
             }
         }).then(function () {
             document.getElementById('btnCerrar').click();
-            getElementos();
+
         })
             .catch(function (error) {
                 show_alerta('Error en la solicitud', 'error');
                 console.log(error);
             });
-    }
+    }*/
     const deleteProduct = (id, name) => {
         const MySwal = withReactContent(Swal);
         MySwal.fire({
@@ -140,9 +156,9 @@ const MostrarElementos = () => {
             showCancelButton: true, confirmButtonText: 'Si, eliminar', cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                setId(id);
-                var parametros = { id: parseInt(id), nombre: '', peso: 0, calorias: 0 };
-                envarSolicitud('DELETE', parametros);
+                setElementos(elementos.filter(item => item.id !== id));
+                document.getElementById('btnCerrar').click();
+        
             }
             else {
                 show_alerta('El elemento NO fue eliminado', 'info');
@@ -165,6 +181,9 @@ const MostrarElementos = () => {
 
                     </div>
                 </div>
+            </div>
+            <div className='my-3 container-fluid text-center text-'>
+                <p>Mochila con capacidad máxima: {pesoMaximo} y con calorías minimas de: {caloriasMinima}</p>
             </div>
             <div className='row mt-3'>
                 <div className='col-12 col-lg-8 offseet-0 offset-lg-2'>
@@ -253,20 +272,7 @@ const MostrarElementos = () => {
                         </div>
                         <div className='modal-body'>
                             <input type='hidden' id='id'></input>
-                            <div className='input-group mb-3'>
-                                <span className='input-group-text'>
-                                    <i className='fa-solid fa-gift'></i>
-                                </span>
-                                <input type='text' id='pesoMaximo' className='form-control' placeholder='Peso máximo' value={pesoMaximo}
-                                    onChange={(e) => setPesoMaximo(e.target.value)}></input>
-                            </div>
-                            <div className='input-group mb-3'>
-                                <span className='input-group-text'>
-                                    <i className='fa-solid fa-gift'></i>
-                                </span>
-                                <input type='text' id='caloriasMinima' className='form-control' placeholder='Calorias mínima' value={caloriasMinima}
-                                    onChange={(e) => setCaloriasMinima(e.target.value)}></input>
-                            </div>
+                            
                             <div className='d-grid col-6 mx-auto'>
                                 <button onClick={() => validar2()} className='btn btn-success'>
                                     <i className='fa-solid fa-floppy-disk'></i> Calcular
